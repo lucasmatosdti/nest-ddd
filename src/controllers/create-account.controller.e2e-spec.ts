@@ -1,11 +1,13 @@
 
 import { AppModule } from "@/app.module";
+import { PrismaService } from "@/prisma/prisma.service";
 import { INestApplication } from "@nestjs/common";
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
 describe('Create Account Controller (E2E)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -13,6 +15,7 @@ describe('Create Account Controller (E2E)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    prisma = moduleRef.get<PrismaService>(PrismaService);
     await app.init();
   });
 
@@ -24,5 +27,13 @@ describe('Create Account Controller (E2E)', () => {
     })
 
     expect(response.status).toBe(201);
+
+    const userOnDatabase = await prisma.user.findUnique({
+      where: {
+        email: 'johndoe@example.com',
+      }
+    });
+
+    expect(userOnDatabase).toBeTruthy();
   });
 })
