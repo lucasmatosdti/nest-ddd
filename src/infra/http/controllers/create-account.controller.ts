@@ -1,3 +1,4 @@
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import {
   Body,
   ConflictException,
@@ -6,7 +7,6 @@ import {
   UsePipes,
 } from '@nestjs/common'
 import { hash } from 'bcryptjs'
-import { PrismaService } from 'src/prisma/prisma.service'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
@@ -20,7 +20,7 @@ type CreateAccountBodySchema = z.infer<typeof createAccountSchema>
 
 @Controller('/accounts')
 export class CreateAccountController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   @Post()
   @UsePipes(new ZodValidationPipe(createAccountSchema))

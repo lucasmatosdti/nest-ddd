@@ -8,7 +8,8 @@
     "no-unused-vars": "off",
     "padded-blocks": "off",
     "no-empty-function": "off",
-    "no-new": "off"
+    "no-new": "off",
+    // "prettier/prettier": "off"
   },
   "env": {
     "vitest-globals/env": true
