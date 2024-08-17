@@ -1,8 +1,8 @@
-import { Env } from '@/env';
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { Env } from '@/env'
+import { Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
+import { PassportModule } from '@nestjs/passport'
 
 @Module({
   imports: [
@@ -11,8 +11,12 @@ import { PassportModule } from '@nestjs/passport';
       inject: [ConfigService],
       global: true,
       useFactory: (configService: ConfigService<Env, true>) => {
-        const privateKey = configService.get('JWT_SECRET_PRIVATE_KEY', { infer: true });
-        const publicKey = configService.get('JWT_SECRET_PUBLIC_KEY', { infer: true });
+        const privateKey = configService.get('JWT_SECRET_PRIVATE_KEY', {
+          infer: true,
+        })
+        const publicKey = configService.get('JWT_SECRET_PUBLIC_KEY', {
+          infer: true,
+        })
 
         return {
           signOptions: { algorithm: 'RS256' },
@@ -20,9 +24,7 @@ import { PassportModule } from '@nestjs/passport';
           publicKey: Buffer.from(publicKey, 'base64'),
         }
       },
-    })
+    }),
   ],
 })
-export class AuthModule {
-
-}
+export class AuthModule {}

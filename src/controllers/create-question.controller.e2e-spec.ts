@@ -1,26 +1,25 @@
-
-import { AppModule } from "@/app.module";
-import { PrismaService } from "@/prisma/prisma.service";
-import { INestApplication } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { Test } from '@nestjs/testing';
-import request from 'supertest';
+import { AppModule } from '@/app.module'
+import { PrismaService } from '@/prisma/prisma.service'
+import { INestApplication } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { Test } from '@nestjs/testing'
+import request from 'supertest'
 
 describe('Create question Controller (E2E)', () => {
-  let app: INestApplication;
-  let prisma: PrismaService;
-  let jwt: JwtService;
+  let app: INestApplication
+  let prisma: PrismaService
+  let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    }).compile()
 
-    app = moduleRef.createNestApplication();
-    prisma = moduleRef.get<PrismaService>(PrismaService);
-    jwt = moduleRef.get<JwtService>(JwtService);
-    await app.init();
-  });
+    app = moduleRef.createNestApplication()
+    prisma = moduleRef.get<PrismaService>(PrismaService)
+    jwt = moduleRef.get<JwtService>(JwtService)
+    await app.init()
+  })
 
   test('[POST] /questions', async () => {
     const user = await prisma.user.create({
@@ -28,10 +27,10 @@ describe('Create question Controller (E2E)', () => {
         name: 'John Doe',
         email: 'johndoe@example.com',
         password: 'password',
-      }
+      },
     })
 
-    const accessToken = jwt.sign({ sub: user.id });
+    const accessToken = jwt.sign({ sub: user.id })
 
     const response = await request(app.getHttpServer())
       .post('/questions')
@@ -41,14 +40,14 @@ describe('Create question Controller (E2E)', () => {
         content: 'I want to create a question, but I do not know how to do it.',
       })
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(201)
 
     const questionOnDatabase = await prisma.question.findFirst({
       where: {
         title: 'How to create a question?',
-      }
-    });
+      },
+    })
 
-    expect(questionOnDatabase).toBeTruthy();
-  });
+    expect(questionOnDatabase).toBeTruthy()
+  })
 })
