@@ -1,10 +1,10 @@
-import { CurrentUser } from '@/infra/auth/current-user.decorator'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
-import { z } from 'zod'
+import { CurrentUser } from '@/infra/auth/current-user.decorator';
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard';
+import { UserPayload } from '@/infra/auth/jwt.strategy';
+import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { z } from 'zod';
+import { CreateQuestionUseCase } from './../../../domain/forum/application/use-cases/create-question-use-case';
 
 const createQuestionBodySchema = z.object({
   title: z.string(),
@@ -18,7 +18,7 @@ const bodyValidationPipe = new ZodValidationPipe(createQuestionBodySchema)
 @Controller('/questions')
 @UseGuards(JwtAuthGuard)
 export class CreateQuestionsController {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly createQuestionUseCase: CreateQuestionUseCase) { }
 
   @Post()
   async handle(
@@ -28,27 +28,13 @@ export class CreateQuestionsController {
     const { title, content } = body
     const userId = user.sub
 
-    const slug = this.convertToSlug(title)
-
-    await this.prisma.question.create({
-      data: {
-        authorId: userId,
-        content,
-        title,
-        slug,
-      },
+    await this.createQuestionUseCase.execute({
+      title,
+      content,
+      authorId: userId,
+      attachmentsIds: [],
     })
   }
 
-  private convertToSlug(title: string) {
-    return title
-      .normalize('NFKD')
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/_/g, '-')
-      .replace(/--+/g, '-')
-      .replace(/-$/g, '')
-  }
+
 }

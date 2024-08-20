@@ -55,7 +55,11 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
   }
 
   async delete(question: Question): Promise<void> {
-    throw new Error('Method not implemented.')
+    await this.prisma.question.delete({
+      where: {
+        id: question.id.toString()
+      }
+    })
   }
 
   async findManyRecent({ page }: PaginationParams): Promise<Question[]> {
